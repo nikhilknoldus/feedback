@@ -1,0 +1,58 @@
+
+.scroll-content { 
+    background: url('../assets/background.png')  no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    opacity: 0.9;
+    -moz-background-size: cover;
+    background-size: cover;
+    color:whitesmoke; 
+  }
+
+h5{
+    color:ghostwhite;
+    font-weight: 600;
+}
+
+.emos{
+   filter: contrast(200%);
+   font-size:95px;
+   text-shadow: 2px 0px 0px black, 0 0 32px #fbfbfb, 0 0 12px darkblue
+}
+.excellent{
+    color:red;
+}
+
+.good{
+    color: #32d6ff;
+}
+
+.average{
+    color:#fffb00;
+}
+
+.notgood{
+    color: darkorange;
+}
+
+ion-icon{
+        transition: width 2s, height 2s, transform 1s;
+}
+
+ion-icon:hover{
+      font-size:125px;
+      transform: rotate(360deg);
+}
+
+// charting
+.ios, .md {
+    page-home {
+        .scroll-content {
+            background-color: map-get($colors, light);
+        }
+        ion-card-header {
+            font-weight: bold;
+        }
+    }
+}
+
+
