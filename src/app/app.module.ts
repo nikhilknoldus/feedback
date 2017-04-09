@@ -8,6 +8,11 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { PopoverPage } from '../pages/home/home';
 import { Chart } from 'chart.js';
+import { SocialSharing } from '@ionic-native/social-sharing';
+import { EmailComposer } from '@ionic-native/email-composer';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { Vibration } from '@ionic-native/vibration';
+
 
 @NgModule({
   declarations: [
@@ -30,6 +35,11 @@ import { Chart } from 'chart.js';
     Storage,
     StatusBar,
     SplashScreen,
+    SocialSharing,
+    EmailComposer,
+    TextToSpeech,
+    Vibration,
+    
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

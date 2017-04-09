@@ -1,10 +1,13 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, OnInit } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Chart } from 'chart.js';
 import { AlertController } from 'ionic-angular';
 import { ToastController, PopoverController, ViewController } from 'ionic-angular';
 import { SocialSharing } from '@ionic-native/social-sharing';
+import { EmailComposer } from '@ionic-native/email-composer';
+import { TextToSpeech } from '@ionic-native/text-to-speech';
+import { Vibration } from '@ionic-native/vibration';
 
 
 @Component({
@@ -39,7 +42,8 @@ export class HomePage {
      _alert:any;
 
     constructor(public navCtrl: NavController, public storage:Storage, public alertCtrl:AlertController,
-                public toastCtrl:ToastController, public popoverCtrl:PopoverController) {
+                public toastCtrl:ToastController, public popoverCtrl:PopoverController,
+                public tts:TextToSpeech, public vibration: Vibration) {
 
     storage.ready().then(() => {  
           
@@ -89,11 +93,16 @@ export class HomePage {
 
   feedback(feed:any){
 
+        this.tts.speak('Thank You Have A Great Time')
+        .then(() => console.log('Success'))
+        .catch((reason: any) => console.log(reason));
+        
         this._alert = this.alertCtrl.create({
             title: "You're awesome ^_^",
             subTitle: 'Thank you for the valuable feedback!!',
             buttons: ["It's ok"]
          });
+         this.vibration.vibrate(1000);
         this._alert.present();
         this.storage.get('feedback').then((data) => {
           if(data != null)
@@ -117,6 +126,11 @@ export class HomePage {
     } 
 
     resetFeedback(){
+            this.vibration.vibrate(500);
+            this.tts.speak('Are you sure')
+            .then(() => console.log('Success'))
+            .catch((reason: any) => console.log(reason));
+
             this._alert = this.alertCtrl.create({
             title: 'Are you sure?',
             message: 'Provide the password to reset feedbacks',
@@ -142,20 +156,24 @@ export class HomePage {
                     this.storage.remove('feedback');
                     this.storage.set('feedback', this.initialData);
                     
-                    this._alert = this.alertCtrl.create({
+                    this.tts.speak('Thank You')
+                    .then(() => console.log('Success'))
+                    .catch((reason: any) => console.log(reason));
+                        this._alert = this.alertCtrl.create({
                         title: "Great",
                         subTitle: 'All feedbacks are removed.',
                         buttons: ["Thanks"]
                     });
                     this._alert.present();
+                    this.vibration.vibrate(500);
                   }else{
-                        console.log("Not a valid password");
-                        this._toast = this.toastCtrl.create({
+                           this._toast = this.toastCtrl.create({
                             message: 'Uh! not a valid password!',
                             duration: 2000,
                             position: 'bottom'
                         });
                         this._toast.present();
+                        this.vibration.vibrate(500);
                       }
                     }
                   }
@@ -166,12 +184,15 @@ export class HomePage {
         
     //charting
     ionViewDidLoad() { 
+        if(this.excellentCount === undefined){
+            this.excellentCount='';this.goodsCount='';this.averageCount='';this.badCount='';
+        }
         this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
-            type: 'doughnut',
+            type: 'pie',
             data: {
-                labels: ["Excellent", "Good", "Average", "Not Good"],
+                labels: ['Excellent:'+this.excellentCount, "Good:"+this.goodsCount, "Average:"+this.averageCount, "Not Good:"+this.badCount],
                 datasets: [{
-                    label: '# of Votes',
+                    label: '',
                     data: [this.excellentCount, this.goodsCount, this.averageCount, this.badCount],
                     backgroundColor: [
                         'rgba(255, 0, 0, 0.8)',
@@ -199,18 +220,43 @@ export class HomePage {
 }
 
 @Component({
-  template: `
+template: `
     <ion-list>
-      <button ion-item (click)="close()">Email Feedback</button>
-      <button ion-item (click)="close()">Share</button>
-      <button ion-item (click)="close()">Reset Feedbacks</button>
+    <button ion-item (click)="insomnia()">Keep Alive</button>
+    <button ion-item (click)="share()">Share</button>
+    <button ion-item (click)="close()">Reset Feedbacks</button>
     </ion-list>
-  `
+`
 })
-export class PopoverPage {
-  constructor(public viewCtrl: ViewController) {}
+export class PopoverPage   {
 
-  close() {
+    counts: HomePage
+    @ViewChild(HomePage) homePageObject: HomePage;
+    
+
+constructor(public viewCtrl: ViewController, private socialSharing: SocialSharing, 
+            public toatCtrl:ToastController, private emailComposer: EmailComposer,
+            public tts:TextToSpeech) {
+}
+
+close() {
     this.viewCtrl.dismiss();
+}
+
+insomnia(){
+   
+}
+
+share(){
+    this.socialSharing.share("Awesome!! In the recent session we got nice feedbacks from the attendees.","Feedback Report","","https://goo.gl/S0SmP8")
+    .then(()=>{
+        this.tts.speak('Thank You Ninja')
+        .then(() => console.log('Success'))
+        .catch((reason: any) => console.log(reason));
+        alert("Hey Ninja, Thank you ^_^")
+    },
+    () =>{
+        alert("Uhh, some issues behind, retry please!!")
+    })
   }
 }

@@ -8,14 +8,21 @@
     color:whitesmoke; 
   }
 
-h5{
+.feed-heading{
     color:ghostwhite;
+    font-weight: 600;
+    font-size:13px;
+}
+
+.option-icon{
+    font-size: 1.6em;
+    float: right;
     font-weight: 600;
 }
 
 .emos{
    filter: contrast(200%);
-   font-size:95px;
+   font-size:100px;
    text-shadow: 2px 0px 0px black, 0 0 32px #fbfbfb, 0 0 12px darkblue
 }
 .excellent{

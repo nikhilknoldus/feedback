@@ -1,16 +1,15 @@
 
 <ion-content padding style="text-align: center">
-    <h5>PLEASE RATE TODAY'S SESSION
-      <button ion-button icon-only (click)="presentPopover($event)">
-        <ion-icon name="more"></ion-icon>
-      </button>
-      </h5> <br><br><br>
+    <span class="feed-heading">PLEASE RATE TODAY'S SESSION
+      </span>  <ion-icon class="option-icon" name="more" (click)="presentPopover($event)">
+        </ion-icon>
+       <br><br><br>
       <ion-icon #excellent (click)="feedback('excellent')" name="trophy" class="emos excellent"></ion-icon><br>Excellent<br><br>
       <ion-icon #good (click)="feedback('good')" name="happy" class="emos good"></ion-icon><br>Good<br><br>
       <ion-icon #average (click)="feedback('average')" name="sad" class="emos average"></ion-icon><br>Average<br><br>
       <ion-icon #notgood (click)="feedback('notgood')" name="thumbs-down"  class="emos notgood"></ion-icon><br>Not Good<br><br><br>
       <button ion-button (click)="showResult()">Show Result</button><br>
-      <span style="font-size:10px">Double tap it</span>  
+      <span style="font-size:13px">Double-tap it</span>  
         <ion-card>
           <ion-card-header>
             FeedBack Result
