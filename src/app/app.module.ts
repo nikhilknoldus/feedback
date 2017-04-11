@@ -12,6 +12,8 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { Vibration } from '@ionic-native/vibration';
+import { Screenshot } from '@ionic-native/screenshot';
+
 
 
 @NgModule({
@@ -39,6 +41,7 @@ import { Vibration } from '@ionic-native/vibration';
     EmailComposer,
     TextToSpeech,
     Vibration,
+    Screenshot,
     
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]

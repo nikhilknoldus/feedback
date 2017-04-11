@@ -68,7 +68,9 @@
     },
     "pickerWorkingDir": "/home/knoldus/Desktop/AngularJs_2/feedback",
     "openedPathsList": {
-        "files": [],
+        "files": [
+            "/home/knoldus/Documents/study/TypesScript/topics/prototypicalInheritance&class.ts"
+        ],
         "folders": [
             "/home/knoldus/Desktop/AngularJs_2/feedback/feedback"
         ]

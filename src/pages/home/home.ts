@@ -8,6 +8,8 @@ import { SocialSharing } from '@ionic-native/social-sharing';
 import { EmailComposer } from '@ionic-native/email-composer';
 import { TextToSpeech } from '@ionic-native/text-to-speech';
 import { Vibration } from '@ionic-native/vibration';
+import { Screenshot } from '@ionic-native/screenshot';
+
 
 
 @Component({
@@ -40,13 +42,13 @@ export class HomePage {
 
      _toast:any;
      _alert:any;
+     _dateTime:any;
 
     constructor(public navCtrl: NavController, public storage:Storage, public alertCtrl:AlertController,
                 public toastCtrl:ToastController, public popoverCtrl:PopoverController,
-                public tts:TextToSpeech, public vibration: Vibration) {
+                public tts:TextToSpeech, public vibration: Vibration, public scrnshot: Screenshot) {
 
     storage.ready().then(() => {  
-          
           this.storage.get('feedback').then((data) => {
             if(data != null){
                 this.storage.get('feedback').then((data) => {
@@ -102,8 +104,9 @@ export class HomePage {
             subTitle: 'Thank you for the valuable feedback!!',
             buttons: ["It's ok"]
          });
-         this.vibration.vibrate(1000);
+        this.vibration.vibrate(1000);
         this._alert.present();
+        this.ionViewDidLoad();      
         this.storage.get('feedback').then((data) => {
           if(data != null)
           {
@@ -125,8 +128,24 @@ export class HomePage {
         this.ionViewDidLoad();
     } 
 
+//This is commented due the issue with this plugin, it cann't click the canvas & its elements on that.
+    // screenshot(){
+    //     this._dateTime= new Date();
+    //     this.scrnshot.save('jpg', 100, 'feedback_'+this._dateTime).then(() =>{
+    //     this.tts.speak('Done');
+    //     this._toast = this.toastCtrl.create({
+    //         message: 'Screenshot saved!!, check your gallery',
+    //         duration: 4000,
+    //         position: 'top'
+    //     });
+    //     this._toast.present(); 
+    //  },
+    //  () => {
+    //     alert("uhh!! some issue here, try later")
+    //  })
+    // }
     resetFeedback(){
-            this.vibration.vibrate(500);
+            this.vibration.vibrate(300);
             this.tts.speak('Are you sure')
             .then(() => console.log('Success'))
             .catch((reason: any) => console.log(reason));
@@ -165,7 +184,7 @@ export class HomePage {
                         buttons: ["Thanks"]
                     });
                     this._alert.present();
-                    this.vibration.vibrate(500);
+                    this.vibration.vibrate(300);
                   }else{
                            this._toast = this.toastCtrl.create({
                             message: 'Uh! not a valid password!',
@@ -173,7 +192,7 @@ export class HomePage {
                             position: 'bottom'
                         });
                         this._toast.present();
-                        this.vibration.vibrate(500);
+                        this.vibration.vibrate(300);
                       }
                     }
                   }
@@ -190,7 +209,7 @@ export class HomePage {
         this.doughnutChart = new Chart(this.doughnutCanvas.nativeElement, {
             type: 'pie',
             data: {
-                labels: ['Excellent:'+this.excellentCount, "Good:"+this.goodsCount, "Average:"+this.averageCount, "Not Good:"+this.badCount],
+                labels: ['Excellent', "Good", "Average", "Not Good"],
                 datasets: [{
                     label: '',
                     data: [this.excellentCount, this.goodsCount, this.averageCount, this.badCount],
@@ -222,33 +241,100 @@ export class HomePage {
 @Component({
 template: `
     <ion-list>
-    <button ion-item (click)="insomnia()">Keep Alive</button>
-    <button ion-item (click)="share()">Share</button>
-    <button ion-item (click)="close()">Reset Feedbacks</button>
+        <button ion-item (click)="share()">Share</button>
+        <button ion-item (click)="emailStats()">Email Stats</button> 
+        <button ion-item (click)="support()">Support/ Help</button>
     </ion-list>
 `
 })
 export class PopoverPage   {
 
-    counts: HomePage
-    @ViewChild(HomePage) homePageObject: HomePage;
-    
+   _date:any;
+   feedbackResponses:any=[];
+   initialData=["excellent","good","average","notgood"];
+
+    excellentCount:any;averageCount:any; goodsCount:any; badCount:any;
 
 constructor(public viewCtrl: ViewController, private socialSharing: SocialSharing, 
             public toatCtrl:ToastController, private emailComposer: EmailComposer,
-            public tts:TextToSpeech) {
-}
+            public tts:TextToSpeech, public scrshot:Screenshot, public storage : Storage) {
+        
+        //when the user will click options, fetch data from storage and do calculations.
+            storage.ready().then(() => {  
+                this.storage.get('feedback').then((data) => {
+                    if(data != null){
+                        this.storage.get('feedback').then((data) => {
+                        this.feedbackResponses = data;
+                    });
+                    }else{
+                        console.log("feedbacks not found, putting initials");
+                        this.storage.set('feedback', this.initialData);
+                    }
+                })
+            });
+    }
 
 close() {
     this.viewCtrl.dismiss();
 }
 
-insomnia(){
-   
+
+ calculateFeedbacks():any{
+            if(this.feedbackResponses === 0){
+                console.log(this.feedbackResponses);
+                alert('Please provide feedback first')
+            }
+            else{
+              this.excellentCount=this.feedbackResponses.reduce(function(n, val){
+                return n + (val === "excellent");
+              },0)
+              this.averageCount=this.feedbackResponses.reduce(function(n, val){
+                  return n + (val === "average");
+              },0)
+              this.goodsCount=this.feedbackResponses.reduce(function(n, val){
+                  return n + (val === "good");
+              },0)
+              this.badCount=this.feedbackResponses.reduce(function(n, val){
+                  return n + (val === "notgood");
+              },0)
+        }
+    }
+
+emailStats(){
+    this._date=new Date();
+    this.calculateFeedbacks();
+
+// Check if sharing via email is supported
+    this.socialSharing.canShareViaEmail().then(() => {
+        this.socialSharing.shareViaEmail('Statistics of Meetup/ Session: Excellent: '+this.excellentCount+' -Good: '+this.goodsCount+' -Average: '+this.averageCount+' -Not Good: '+this.badCount, 'Feedback For Session :dated: '+this._date, ['']).then(() => {
+        }).catch(() => {
+            alert("Uh!! Seems like some issues right now, please try later");
+            });
+        }).catch(() => {
+        alert("Ohh!! Email client is not configured in your device");
+    });
+      this.viewCtrl.dismiss();
+}
+
+
+support(){
+    this._date=new Date();
+    this.calculateFeedbacks();
+
+// Check if sharing via email is supported
+    this.socialSharing.canShareViaEmail().then(() => {
+        this.socialSharing.shareViaEmail('Hi Feedback App, ... your message', 'Issue(s) :Dated: '+this._date, ['ignitesofthelp@gmail.com']).then(() => {
+        }).catch(() => {
+            alert("Uh!! Seems like some issues right now, please try later");
+            });
+        }).catch(() => {
+        alert("Ohh!! Email client is not configured in your device");
+    });
+      this.viewCtrl.dismiss();
 }
 
 share(){
-    this.socialSharing.share("Awesome!! In the recent session we got nice feedbacks from the attendees.","Feedback Report","","https://goo.gl/S0SmP8")
+    this.socialSharing.share("Awesome!! In the recent session we got nice feedbacks from the attendees using this cool app","Feedback Report","","https://goo.gl/x0MKWu")
     .then(()=>{
         this.tts.speak('Thank You Ninja')
         .then(() => console.log('Success'))
@@ -256,7 +342,9 @@ share(){
         alert("Hey Ninja, Thank you ^_^")
     },
     () =>{
-        alert("Uhh, some issues behind, retry please!!")
+       alert("Uhh, some issues behind, retry please!!")
     })
+      this.viewCtrl.dismiss();
   }
 }
+

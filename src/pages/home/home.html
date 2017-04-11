@@ -9,7 +9,7 @@
       <ion-icon #average (click)="feedback('average')" name="sad" class="emos average"></ion-icon><br>Average<br><br>
       <ion-icon #notgood (click)="feedback('notgood')" name="thumbs-down"  class="emos notgood"></ion-icon><br>Not Good<br><br><br>
       <button ion-button (click)="showResult()">Show Result</button><br>
-      <span style="font-size:13px">Double-tap it</span>  
+      <span style="font-size:13px">Double-tap it</span>        
         <ion-card>
           <ion-card-header>
             FeedBack Result
@@ -18,5 +18,12 @@
             <canvas #doughnutCanvas></canvas>
           </ion-card-content>
         </ion-card> 
-        <button ion-button (click)="resetFeedback()">Reset Feedback</button> <br>                 
+        <!--<button ion-button small (click)="screenshot()">Screenshot Stats</button>-->
+        <button ion-button small (click)="resetFeedback()">Reset Feedback</button> <br>   
+        <!--<ion-fab right bottom >
+          <button ion-fab style="background-color:#ca2f7c" color="light"><ion-icon name="arrow-dropleft"></ion-icon></button>
+          <ion-fab-list side="left">
+            <button ion-fab><ion-icon name="logo-facebook"></ion-icon></button>
+          </ion-fab-list>
+        </ion-fab>-->
   </ion-content>
